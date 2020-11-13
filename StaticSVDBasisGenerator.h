@@ -27,51 +27,53 @@ namespace CAROM {
  */
 class StaticSVDBasisGenerator : public SVDBasisGenerator
 {
-   public:
-      /**
-       * @brief Constructor.
-       *
-       * @param[in] options The struct containing the options for this basis
-       *                    generator.
-       * @param[in] basis_file_name The base part of the name of the file
-       *                            containing the basis vectors.  Each process
-       *                            will append its process ID to this base
-       *                            name.
-       * @param[in] file_format The format of the file containing the basis
-       *                        vectors.
-       */
-      StaticSVDBasisGenerator(
-         StaticSVDOptions options,
-         const std::string& basis_file_name = "",
-         Database::formats file_format = Database::HDF5);
+public:
+    /**
+     * @brief Constructor.
+     *
+     * @param[in] options The struct containing the options for this basis
+     *                    generator.
+     * @param[in] basis_file_name The base part of the name of the file
+     *                            containing the basis vectors.  Each process
+     *                            will append its process ID to this base
+     *                            name.
+     * @param[in] file_format The format of the file containing the basis
+     *                        vectors.
+     */
+    StaticSVDBasisGenerator(
+        StaticSVDOptions options,
+        const std::string& basis_file_name = "",
+        Database::formats file_format = Database::HDF5);
 
-      /**
-       * @brief Destructor.
-       */
-      virtual
-      ~StaticSVDBasisGenerator();
+    /**
+     * @brief Destructor.
+     */
+    virtual
+    ~StaticSVDBasisGenerator();
 
-      bool
-      updateRightSV() { return true; }
+    bool
+    updateRightSV() {
+        return true;
+    }
 
-   private:
-      /**
-       * @brief Unimplemented default constructor.
-       */
-      StaticSVDBasisGenerator();
+private:
+    /**
+     * @brief Unimplemented default constructor.
+     */
+    StaticSVDBasisGenerator();
 
-      /**
-       * @brief Unimplemented copy constructor.
-       */
-      StaticSVDBasisGenerator(
-         const StaticSVDBasisGenerator& other);
+    /**
+     * @brief Unimplemented copy constructor.
+     */
+    StaticSVDBasisGenerator(
+        const StaticSVDBasisGenerator& other);
 
-      /**
-       * @brief Unimplemented assignment operator.
-       */
-      StaticSVDBasisGenerator&
-      operator = (
-         const StaticSVDBasisGenerator& rhs);
+    /**
+     * @brief Unimplemented assignment operator.
+     */
+    StaticSVDBasisGenerator&
+    operator = (
+        const StaticSVDBasisGenerator& rhs);
 };
 
 }

@@ -18,13 +18,13 @@
 namespace CAROM {
 
 IncrementalSVDBasisGenerator::IncrementalSVDBasisGenerator(
-   IncrementalSVDOptions options,
-   const std::string& basis_file_name,
-   Database::formats file_format) :
-   SVDBasisGenerator(basis_file_name, file_format, options.write_snapshots)
+    IncrementalSVDOptions options,
+    const std::string& basis_file_name,
+    Database::formats file_format) :
+    SVDBasisGenerator(basis_file_name, file_format, options.write_snapshots)
 {
-   d_svdsampler.reset(new IncrementalSVDSampler(options,
-                                                basis_file_name));
+    d_svdsampler.reset(new IncrementalSVDSampler(options,
+                       basis_file_name));
 }
 
 IncrementalSVDBasisGenerator::~IncrementalSVDBasisGenerator()

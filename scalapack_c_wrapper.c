@@ -28,7 +28,9 @@ void free_matrix_data(struct SLPK_Matrix* A)
 void svd_init(struct SVDManager* mgr, struct SLPK_Matrix* A)
 {
     mgr->A = A;
-    mgr->U = NULL; mgr->S = NULL; mgr->V = NULL;
+    mgr->U = NULL;
+    mgr->S = NULL;
+    mgr->V = NULL;
     mgr->dou = 1;
     mgr->dov = 0;
     mgr->done = 0;
@@ -57,7 +59,7 @@ void factorize_prep(struct SVDManager* mgr)
         make_similar_matrix(V, SIZE, A->n, A->ctxt, A->mb, A->nb);
         mgr->V = V;
     }
-    
+
     if (mgr->S == NULL) {
         mgr->S = malloc(sizeof(REAL_TYPE) * SIZE);
     }

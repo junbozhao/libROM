@@ -29,48 +29,48 @@ namespace CAROM {
 
 class IncrementalSVDBasisGenerator : public SVDBasisGenerator
 {
-   public:
-      /**
-       * @brief Constructor.
-       *
-       * @param[in] options The struct containing the options for this basis
-       *                    generator.
-       * @param[in] basis_file_name The base part of the name of the file
-       *                            containing the basis vectors.  Each process
-       *                            will append its process ID to this base
-       *                            name.
-       * @param[in] file_format The format of the file containing the basis
-       *                        vectors.
-       */
-      IncrementalSVDBasisGenerator(
-         IncrementalSVDOptions options,
-         const std::string& basis_file_name = "",
-         Database::formats file_format = Database::HDF5);
+public:
+    /**
+     * @brief Constructor.
+     *
+     * @param[in] options The struct containing the options for this basis
+     *                    generator.
+     * @param[in] basis_file_name The base part of the name of the file
+     *                            containing the basis vectors.  Each process
+     *                            will append its process ID to this base
+     *                            name.
+     * @param[in] file_format The format of the file containing the basis
+     *                        vectors.
+     */
+    IncrementalSVDBasisGenerator(
+        IncrementalSVDOptions options,
+        const std::string& basis_file_name = "",
+        Database::formats file_format = Database::HDF5);
 
-      /**
-       * @brief Destructor.
-       */
-      virtual
-      ~IncrementalSVDBasisGenerator();
+    /**
+     * @brief Destructor.
+     */
+    virtual
+    ~IncrementalSVDBasisGenerator();
 
-   private:
-      /**
-       * @brief Unimplemented default constructor.
-       */
-      IncrementalSVDBasisGenerator();
+private:
+    /**
+     * @brief Unimplemented default constructor.
+     */
+    IncrementalSVDBasisGenerator();
 
-      /**
-       * @brief Unimplemented copy constructor.
-       */
-      IncrementalSVDBasisGenerator(
-         const IncrementalSVDBasisGenerator& other);
+    /**
+     * @brief Unimplemented copy constructor.
+     */
+    IncrementalSVDBasisGenerator(
+        const IncrementalSVDBasisGenerator& other);
 
-      /**
-       * @brief Unimplemented assignment operator.
-       */
-      IncrementalSVDBasisGenerator&
-      operator = (
-         const IncrementalSVDBasisGenerator& rhs);
+    /**
+     * @brief Unimplemented assignment operator.
+     */
+    IncrementalSVDBasisGenerator&
+    operator = (
+        const IncrementalSVDBasisGenerator& rhs);
 };
 
 }

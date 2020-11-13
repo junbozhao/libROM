@@ -45,325 +45,328 @@ class Matrix;
  */
 class SVDBasisGenerator
 {
-   public:
-      /**
-       * @brief Destructor.
-       */
-      virtual
-      ~SVDBasisGenerator();
+public:
+    /**
+     * @brief Destructor.
+     */
+    virtual
+    ~SVDBasisGenerator();
 
-      /**
-       * @brief Returns true if it is time for the next svd sample.
-       *
-       * @pre time >= 0.0
-       *
-       * @param[in] time Time of interest.
-       *
-       * @return True if it is time for the next sample to be taken.
-       */
-      bool
-      isNextSample(
-         double time)
-      {
-         CAROM_VERIFY(time >= 0.0);
-         return d_svdsampler->isNextSample(time);
-      }
+    /**
+     * @brief Returns true if it is time for the next svd sample.
+     *
+     * @pre time >= 0.0
+     *
+     * @param[in] time Time of interest.
+     *
+     * @return True if it is time for the next sample to be taken.
+     */
+    bool
+    isNextSample(
+        double time)
+    {
+        CAROM_VERIFY(time >= 0.0);
+        return d_svdsampler->isNextSample(time);
+    }
 
-      /**
-       * @brief Returns true if it needs to update right basis vectors.
-       */
-      bool
-      updateRightSV() {return d_svdsampler->isUpdateRightSV(); };
+    /**
+     * @brief Returns true if it needs to update right basis vectors.
+     */
+    bool
+    updateRightSV() {
+        return d_svdsampler->isUpdateRightSV();
+    };
 
-      /**
-       * @brief Sample the new state, u_in, at the given time.
-       *
-       * @pre u_in != 0
-       * @pre time >= 0.0
-       *
-       * @param[in] u_in The state at the specified time.
-       * @param[in] time The simulation time for the state.
-       * @param[in] dt The current simulation dt.
-       *
-       * @return True if the sampling was successful.
-       */
-      bool
-      takeSample(
-         double* u_in,
-         double time,
-         double dt,
-         bool add_without_increase = false)
-      {
-         CAROM_VERIFY(u_in != 0);
-         CAROM_VERIFY(time >= 0);
+    /**
+     * @brief Sample the new state, u_in, at the given time.
+     *
+     * @pre u_in != 0
+     * @pre time >= 0.0
+     *
+     * @param[in] u_in The state at the specified time.
+     * @param[in] time The simulation time for the state.
+     * @param[in] dt The current simulation dt.
+     *
+     * @return True if the sampling was successful.
+     */
+    bool
+    takeSample(
+        double* u_in,
+        double time,
+        double dt,
+        bool add_without_increase = false)
+    {
+        CAROM_VERIFY(u_in != 0);
+        CAROM_VERIFY(time >= 0);
 
-         // Check that u_in is not non-zero.
-         Vector u_vec(u_in, d_svdsampler->getDim(), true);
-         if (u_vec.norm() == 0.0) {
+        // Check that u_in is not non-zero.
+        Vector u_vec(u_in, d_svdsampler->getDim(), true);
+        if (u_vec.norm() == 0.0) {
             return false;
-         }
+        }
 
 
-         if (getNumBasisTimeIntervals() > 0 &&
-             d_svdsampler->isNewTimeInterval()) {
+        if (getNumBasisTimeIntervals() > 0 &&
+                d_svdsampler->isNewTimeInterval()) {
             d_svdsampler->resetDt(dt);
             if (d_basis_writer) {
                 if (d_write_snapshots) {
-                  writeSnapshot();
+                    writeSnapshot();
                 }
                 else {
-                  d_basis_writer->writeBasis("basis");
+                    d_basis_writer->writeBasis("basis");
                 }
             }
-         }
+        }
 
-         return d_svdsampler->takeSample(u_in, time, add_without_increase);
-      }
+        return d_svdsampler->takeSample(u_in, time, add_without_increase);
+    }
 
-      /**
-       * @brief Signal that the final sample has been taken.
-       *
-       * @param[in] kind "basis" or "snapshot" to write one or the other.
-       */
-      void
-      endSamples(const std::string& kind = "basis")
-      {
-         if (d_basis_writer) {
+    /**
+     * @brief Signal that the final sample has been taken.
+     *
+     * @param[in] kind "basis" or "snapshot" to write one or the other.
+     */
+    void
+    endSamples(const std::string& kind = "basis")
+    {
+        if (d_basis_writer) {
             d_basis_writer->writeBasis(kind);
-         }
-      }
+        }
+    }
 
-     /**
-      * @brief Write current snapshot matrix.
-      */
-      void
-      writeSnapshot()
-      {
-         if (d_basis_writer) {
+    /**
+     * @brief Write current snapshot matrix.
+     */
+    void
+    writeSnapshot()
+    {
+        if (d_basis_writer) {
             d_basis_writer->writeBasis("snapshot");
-         }
-      }
+        }
+    }
 
-      /**
-       * @brief Load previously saved sample (basis or state).
-       *
-       * @param[in] base_file_name The base part of the name of the files
-       *                           holding the basis / snapshot vectors.
-       * @param[in] kind Either basis or snapshot, the kind of data to load.
-       * @param[in] cut_off The max number of bases or snapshots to read.
-       * @param[in] db_format Format of the file to read.
-       */
-      void
-      loadSamples(const std::string& base_file_name,
-                  const std::string& kind = "basis",
-                  int cut_off = 1e9,
-                  Database::formats db_format = Database::HDF5)
-      {
-         CAROM_ASSERT(!base_file_name.empty());
-         CAROM_VERIFY(kind == "basis" || kind == "snapshot");
+    /**
+     * @brief Load previously saved sample (basis or state).
+     *
+     * @param[in] base_file_name The base part of the name of the files
+     *                           holding the basis / snapshot vectors.
+     * @param[in] kind Either basis or snapshot, the kind of data to load.
+     * @param[in] cut_off The max number of bases or snapshots to read.
+     * @param[in] db_format Format of the file to read.
+     */
+    void
+    loadSamples(const std::string& base_file_name,
+                const std::string& kind = "basis",
+                int cut_off = 1e9,
+                Database::formats db_format = Database::HDF5)
+    {
+        CAROM_ASSERT(!base_file_name.empty());
+        CAROM_VERIFY(kind == "basis" || kind == "snapshot");
 
-         if (d_basis_reader) delete d_basis_reader;
+        if (d_basis_reader) delete d_basis_reader;
 
-	       d_basis_reader = new BasisReader(base_file_name, db_format);
-         double time = 0.0;
-         const Matrix* mat;
-         const Matrix* singular_vals;
+        d_basis_reader = new BasisReader(base_file_name, db_format);
+        double time = 0.0;
+        const Matrix* mat;
+        const Matrix* singular_vals;
 
-         if (kind == "basis") {
+        if (kind == "basis") {
             mat = d_basis_reader->getSpatialBasis(time);
             singular_vals = d_basis_reader->getSingularValues(time);
-         }
-         else if (kind == "snapshot") {
+        }
+        else if (kind == "snapshot") {
             mat = d_basis_reader->getSnapshotMatrix(time);
-         }
+        }
 
-         int num_rows = mat->numRows();
-         int num_cols = mat->numColumns();
-         int max_cols = num_cols;
-         if (cut_off < num_cols) max_cols = cut_off;
+        int num_rows = mat->numRows();
+        int num_cols = mat->numColumns();
+        int max_cols = num_cols;
+        if (cut_off < num_cols) max_cols = cut_off;
 
-         for (int j = 0; j < max_cols; j++) {
+        for (int j = 0; j < max_cols; j++) {
             double* u_in = new double[num_rows];
             for (int i = 0; i < num_rows; i++) {
-               if (kind == "basis") {
-                  u_in[i] = mat->item(i,j) * singular_vals->item(j,j); }
-               else {
-                  u_in[i] = mat->item(i,j);
-               }
+                if (kind == "basis") {
+                    u_in[i] = mat->item(i,j) * singular_vals->item(j,j);
+                }
+                else {
+                    u_in[i] = mat->item(i,j);
+                }
             }
             d_svdsampler->takeSample(u_in, time, false);
             delete[] u_in;
-         }
-      }
+        }
+    }
 
-      /**
-       * @brief Computes next time an svd sample is needed.
-       *
-       * @pre u_in != 0
-       * @pre rhs_in != 0
-       * @pre time >= 0.0
-       *
-       * @param[in] u_in The state at the specified time.
-       * @param[in] rhs_in The right hand side at the specified time.
-       * @param[in] time The simulation time for the state.
-       */
-      double
-      computeNextSampleTime(
-         double* u_in,
-         double* rhs_in,
-         double time)
-      {
-         CAROM_VERIFY(u_in != 0);
-         CAROM_VERIFY(rhs_in != 0);
-         CAROM_VERIFY(time >= 0);
+    /**
+     * @brief Computes next time an svd sample is needed.
+     *
+     * @pre u_in != 0
+     * @pre rhs_in != 0
+     * @pre time >= 0.0
+     *
+     * @param[in] u_in The state at the specified time.
+     * @param[in] rhs_in The right hand side at the specified time.
+     * @param[in] time The simulation time for the state.
+     */
+    double
+    computeNextSampleTime(
+        double* u_in,
+        double* rhs_in,
+        double time)
+    {
+        CAROM_VERIFY(u_in != 0);
+        CAROM_VERIFY(rhs_in != 0);
+        CAROM_VERIFY(time >= 0);
 
-         return d_svdsampler->computeNextSampleTime(u_in, rhs_in, time);
-      }
+        return d_svdsampler->computeNextSampleTime(u_in, rhs_in, time);
+    }
 
-      /**
-       * @brief Returns the basis vectors for the current time interval as a
-       * Matrix.
-       *
-       * @return The basis vectors for the current time interval.
-       */
-      const Matrix*
-      getSpatialBasis()
-      {
-         return d_svdsampler->getSpatialBasis();
-      }
+    /**
+     * @brief Returns the basis vectors for the current time interval as a
+     * Matrix.
+     *
+     * @return The basis vectors for the current time interval.
+     */
+    const Matrix*
+    getSpatialBasis()
+    {
+        return d_svdsampler->getSpatialBasis();
+    }
 
-      /**
-       * @brief Returns the temporal basis vectors for the current time interval as a
-       * Matrix.
-       *
-       * @return The temporal basis vectors for the current time interval.
-       */
-      const Matrix*
-      getTemporalBasis()
-      {
-         return d_svdsampler->getTemporalBasis();
-      }
+    /**
+     * @brief Returns the temporal basis vectors for the current time interval as a
+     * Matrix.
+     *
+     * @return The temporal basis vectors for the current time interval.
+     */
+    const Matrix*
+    getTemporalBasis()
+    {
+        return d_svdsampler->getTemporalBasis();
+    }
 
-      /**
-       * @brief Returns the singular values for the current time interval as a
-       * Matrix.
-       *
-       * @return The singular values for the current time interval.
-       */
-      const Matrix*
-      getSingularValues()
-      {
-         return d_svdsampler->getSingularValues();
-      }
+    /**
+     * @brief Returns the singular values for the current time interval as a
+     * Matrix.
+     *
+     * @return The singular values for the current time interval.
+     */
+    const Matrix*
+    getSingularValues()
+    {
+        return d_svdsampler->getSingularValues();
+    }
 
-      /**
-       * @brief Returns the snapshot matrix for the current time interval.
-       *
-       * @return The snapshot matrix for the current time interval.
-       */
-      const Matrix*
-      getSnapshotMatrix()
-      {
-         return d_svdsampler->getSnapshotMatrix();
-      }
+    /**
+     * @brief Returns the snapshot matrix for the current time interval.
+     *
+     * @return The snapshot matrix for the current time interval.
+     */
+    const Matrix*
+    getSnapshotMatrix()
+    {
+        return d_svdsampler->getSnapshotMatrix();
+    }
 
-      /**
-       * @brief Returns the number of time intervals on which different sets of
-       * basis vectors are defined.
-       *
-       * @return The number of time intervals on which there are basis vectors.
-       */
-      int
-      getNumBasisTimeIntervals() const
-      {
-         return d_svdsampler->getNumBasisTimeIntervals();
-      }
+    /**
+     * @brief Returns the number of time intervals on which different sets of
+     * basis vectors are defined.
+     *
+     * @return The number of time intervals on which there are basis vectors.
+     */
+    int
+    getNumBasisTimeIntervals() const
+    {
+        return d_svdsampler->getNumBasisTimeIntervals();
+    }
 
-      /**
-       * @brief Returns the start time for the requested time interval.
-       *
-       * @pre 0 <= which_interval
-       * @pre which_interval < getNumBasisTimeIntervals()
-       *
-       * @param[in] which_interval Time interval whose start time is needed.
-       *
-       * @return The start time for the requested time interval.
-       */
-      double
-      getBasisIntervalStartTime(
-         int which_interval) const
-      {
-         CAROM_VERIFY(0 <= which_interval);
-         CAROM_VERIFY(which_interval < getNumBasisTimeIntervals());
-         return d_svdsampler->getBasisIntervalStartTime(which_interval);
-      }
+    /**
+     * @brief Returns the start time for the requested time interval.
+     *
+     * @pre 0 <= which_interval
+     * @pre which_interval < getNumBasisTimeIntervals()
+     *
+     * @param[in] which_interval Time interval whose start time is needed.
+     *
+     * @return The start time for the requested time interval.
+     */
+    double
+    getBasisIntervalStartTime(
+        int which_interval) const
+    {
+        CAROM_VERIFY(0 <= which_interval);
+        CAROM_VERIFY(which_interval < getNumBasisTimeIntervals());
+        return d_svdsampler->getBasisIntervalStartTime(which_interval);
+    }
 
-      int getNumSamples() const
-      {
-	return d_svdsampler->getNumSamples();
-      }
+    int getNumSamples() const
+    {
+        return d_svdsampler->getNumSamples();
+    }
 
-   protected:
-      /**
-       * @brief Constructor.
-       *
-       * Although all member functions are implemented by delegation to either
-       * d_basis_writer or d_svdsampler, this class is still abstract.  In this
-       * context it is not yet known which SVDSampler to instantiate.  Hence an
-       * instance of this class may not be constructed.
-       *
-       * @param[in] basis_file_name The base part of the name of the file
-       *                            containing the basis vectors.  Each process
-       *                            will append its process ID to this base
-       *                            name.
-       * @param[in] file_format The format of the file containing the basis
-       *                        vectors.
-       * @param[in] write_snapshots Whether to automatically write snapshots matrices
-       *                        instead of basis matrices.
-       */
-      SVDBasisGenerator(
-         const std::string& basis_file_name,
-         Database::formats file_format = Database::HDF5,
-         bool write_snapshots = false);
+protected:
+    /**
+     * @brief Constructor.
+     *
+     * Although all member functions are implemented by delegation to either
+     * d_basis_writer or d_svdsampler, this class is still abstract.  In this
+     * context it is not yet known which SVDSampler to instantiate.  Hence an
+     * instance of this class may not be constructed.
+     *
+     * @param[in] basis_file_name The base part of the name of the file
+     *                            containing the basis vectors.  Each process
+     *                            will append its process ID to this base
+     *                            name.
+     * @param[in] file_format The format of the file containing the basis
+     *                        vectors.
+     * @param[in] write_snapshots Whether to automatically write snapshots matrices
+     *                        instead of basis matrices.
+     */
+    SVDBasisGenerator(
+        const std::string& basis_file_name,
+        Database::formats file_format = Database::HDF5,
+        bool write_snapshots = false);
 
-      /**
-       * @brief Writer of basis vectors.
-       */
-      BasisWriter* d_basis_writer;
+    /**
+     * @brief Writer of basis vectors.
+     */
+    BasisWriter* d_basis_writer;
 
-      /**
-       * @brief Reader of basis vectors.
-       */
-      BasisReader* d_basis_reader;
+    /**
+     * @brief Reader of basis vectors.
+     */
+    BasisReader* d_basis_reader;
 
-      /**
-       * @brief Whether to write snapshots instead of bases.
-       */
-      bool d_write_snapshots;
+    /**
+     * @brief Whether to write snapshots instead of bases.
+     */
+    bool d_write_snapshots;
 
 
-      /**
-       * @brief Pointer to the underlying sampling control object.
-       */
+    /**
+     * @brief Pointer to the underlying sampling control object.
+     */
 #if __cplusplus >= 201103L
-      std::shared_ptr<SVDSampler> d_svdsampler;
+    std::shared_ptr<SVDSampler> d_svdsampler;
 #else
-      boost::shared_ptr<SVDSampler> d_svdsampler;
+    boost::shared_ptr<SVDSampler> d_svdsampler;
 #endif
 
-   private:
-      /**
-       * @brief Unimplemented copy constructor.
-       */
-      SVDBasisGenerator(
-         const SVDBasisGenerator& other);
+private:
+    /**
+     * @brief Unimplemented copy constructor.
+     */
+    SVDBasisGenerator(
+        const SVDBasisGenerator& other);
 
-      /**
-       * @brief Unimplemented assignment operator.
-       */
-      SVDBasisGenerator&
-      operator = (
-         const SVDBasisGenerator& rhs);
+    /**
+     * @brief Unimplemented assignment operator.
+     */
+    SVDBasisGenerator&
+    operator = (
+        const SVDBasisGenerator& rhs);
 };
 
 }

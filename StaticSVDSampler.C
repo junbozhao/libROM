@@ -17,10 +17,10 @@
 namespace CAROM {
 
 StaticSVDSampler::StaticSVDSampler(
-   StaticSVDOptions options)
+    StaticSVDOptions options)
 {
-   d_svd.reset(new StaticSVD(options));
-   d_updateRightSV = options.output_rightSV;
+    d_svd.reset(new StaticSVD(options));
+    d_updateRightSV = options.output_rightSV;
 }
 
 StaticSVDSampler::~StaticSVDSampler()
@@ -29,28 +29,28 @@ StaticSVDSampler::~StaticSVDSampler()
 
 bool
 StaticSVDSampler::isNextSample(
-   double time)
+    double time)
 {
-   CAROM_NULL_USE(time);
-   return true;
+    CAROM_NULL_USE(time);
+    return true;
 }
 
 double
 StaticSVDSampler::computeNextSampleTime(
-   double* u_in,
-   double* rhs_in,
-   double time)
+    double* u_in,
+    double* rhs_in,
+    double time)
 {
-   CAROM_NULL_USE(u_in);
-   CAROM_NULL_USE(rhs_in);
-   return time;
+    CAROM_NULL_USE(u_in);
+    CAROM_NULL_USE(rhs_in);
+    return time;
 }
 
 void
 StaticSVDSampler::resetDt(
-   double new_dt)
+    double new_dt)
 {
-   CAROM_NULL_USE(new_dt);
+    CAROM_NULL_USE(new_dt);
 }
 
 }

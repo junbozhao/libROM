@@ -20,26 +20,26 @@
 namespace CAROM {
 
 SVDBasisGenerator::SVDBasisGenerator(
-   const std::string& basis_file_name,
-   Database::formats file_format,
-   bool write_snapshots) :
-   d_basis_writer(0),
-   d_basis_reader(0),
-   d_write_snapshots(write_snapshots)
+    const std::string& basis_file_name,
+    Database::formats file_format,
+    bool write_snapshots) :
+    d_basis_writer(0),
+    d_basis_reader(0),
+    d_write_snapshots(write_snapshots)
 {
-   if (!basis_file_name.empty()) {
-      d_basis_writer = new BasisWriter(this, basis_file_name, file_format);
-   }
+    if (!basis_file_name.empty()) {
+        d_basis_writer = new BasisWriter(this, basis_file_name, file_format);
+    }
 }
 
 SVDBasisGenerator::~SVDBasisGenerator()
 {
-   if (d_basis_writer) {
-      delete d_basis_writer;
-   }
-   if (d_basis_reader) {
-     delete d_basis_reader;
-   }
+    if (d_basis_writer) {
+        delete d_basis_writer;
+    }
+    if (d_basis_reader) {
+        delete d_basis_reader;
+    }
 }
 
 }
